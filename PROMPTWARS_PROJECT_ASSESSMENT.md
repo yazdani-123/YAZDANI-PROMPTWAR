@@ -12,7 +12,7 @@ The [current official in-person page](https://promptwars.in/promptwars.html) des
 
 | Dimension | Current assessment | Evidence | Main gap |
 |---|---|---|---|
-| Problem statement alignment | Strong core behavior; submission incomplete until public links exist | Decision/reason inputs, optional context, grounded questions, source excerpts, goal/outcome connections, revision and dismissal; meaningful live Gemini integration | Deployed URL and accessible GitHub repository are explicit brief requirements. Localhost alone does not satisfy them. |
+| Problem statement alignment | Strong core behavior; brief is not yet fully submission-ready | Decision/reason inputs, optional context, grounded questions, source excerpts, goal/outcome connections, revision and dismissal; meaningful live Gemini integration | A public deployed URL is required by the brief. The repository is now public, but localhost alone does not satisfy the live-app requirement. |
 | Code quality | Strong prototype foundation; maintenance can improve | Strict TypeScript, separate validation/pipeline and capacity modules, bounded stateless API, clean build/lint/typecheck, safe recoverable errors | The page combines form state, revision logic, and rendering. Dense one-line JSX/CSS makes future review harder. |
 | Security | Good tested local controls; public exposure needs more controls | Server-only key, ignored env file, no key in source/client assets, bounded input, schema/quote checks, plain text rendering, safe logs, 18 direct security checks | Anonymous paid endpoint has no per-client/distributed request budget. The three-request cap only limits simultaneous work in one process. Strix was not run; security-header coverage is incomplete. |
 | Efficiency | Reasonable lightweight interface; AI latency unmeasured | Explicit submission only, duplicate-submit guard, bounded fields/output, no retry loop, no heavy visual libraries or remote media | Each accepted request invokes two sequential model calls. No measured end-to-end latency, provider token/cost distribution, or Lighthouse/Core Web Vitals report. |
@@ -41,7 +41,7 @@ The [current official in-person page](https://promptwars.in/promptwars.html) des
 
 ## Highest-impact improvements
 
-1. Complete the requested public repository upload, then later deploy and verify the required public app URL. These unlock evaluator access to all other evidence.
+1. Later deploy the app and verify its public URL, so evaluators can access the working demo as well as the public source repository.
 2. Before public deployment, enforce host-level request limits and provider quota/spending controls; assess appropriate production security headers.
 3. Add a reproducible browser regression for analysis, clarification, dismissal, undo, and recoverable failure. Retest all seven semantic scenarios after the final prompt changes if time permits.
 4. Correct the dismissed-summary CSS override and complete keyboard, contrast, zoom, and screen-reader checks.
@@ -49,3 +49,4 @@ The [current official in-person page](https://promptwars.in/promptwars.html) des
 6. Present a brief demonstration of the reason-to-outcome connection and how a user's correction removes a resolved concern. Explain the AI prompting constraints and limitations.
 
 The project has a credible, focused solution to the challenge. The evidence supports a working local prototype; it does not support a guaranteed 90+ official score, complete security assurance, or full accessibility conformance.
+
