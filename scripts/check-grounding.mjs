@@ -1,0 +1,45 @@
+import assert from "node:assert/strict";
+import { analysisRequestSchema, analysisResponseSchema, hasGroundedObservations, runReflectionAnalysis } from "../src/lib/analysis-schema.ts";
+import { reserveAnalysisSlot } from "../src/lib/request-budget.ts";
+
+const request = analysisRequestSchema.parse({ decision: "Take a semester internship", reasoning: "The hours seem manageable alongside my coursework." });
+const observation = { id: "obs-1", category: "assumption", title: "Time commitment", grounding: "The hours seem manageable", whyItMatters: "Coursework may affect the available time.", reasoningLink: "Taking manageable hours as given may leave the combined workload unexamined.", question: "What is the combined weekly workload?", uncertainty: "The exact hours are not established." };
+const response = analysisResponseSchema.parse({ summary: "Considering a semester internship.", decisionFrame: { goal: "Not stated in your reflection.", goalQuote: null, expectedOutcome: "Not stated in your reflection.", outcomeQuote: null }, observations: [observation], clarifiedPoints: [], remainingQuestions: [] });
+assert.equal(hasGroundedObservations(request, response), true);
+assert.equal(hasGroundedObservations(request, { ...response, observations: [{ ...observation, grounding: "My employer guarantees a flexible schedule." }] }), false);
+assert.equal(hasGroundedObservations(request, { ...response, observations: [{ ...observation, grounding: "The hours   seem manageable" }] }), true);
+assert.equal(hasGroundedObservations(request, { ...response, observations: [] }), true);
+const corrected = analysisRequestSchema.parse({ ...request, clarifications: [{ observation, response: "My college approved the internship schedule." }] });
+assert.equal(hasGroundedObservations(corrected, { ...response, observations: [{ ...observation, grounding: "My college approved the internship schedule." }] }), true);
+const snapshotOnly = analysisRequestSchema.parse({ ...request, clarifications: [{ observation: { ...observation, grounding: "A fabricated prior model quotation." }, dismissalReason: "not relevant" }] });
+assert.equal(hasGroundedObservations(snapshotOnly, { ...response, observations: [{ ...observation, grounding: "A fabricated prior model quotation." }] }), false);
+assert.equal(analysisResponseSchema.safeParse({ ...response, observations: [{ ...observation, grounding: "hours" }] }).success, false);
+assert.equal(hasGroundedObservations(request, { ...response, decisionFrame: { ...response.decisionFrame, goal: "Become wealthy" } }), false);
+assert.equal(hasGroundedObservations(request, { ...response, decisionFrame: { ...response.decisionFrame, goal: "Finish coursework", goalQuote: "I want to become wealthy." } }), false);
+const review = { summaryFaithful: true, frameFaithful: true, respectsUserAgency: true, observations: [{ id: "obs-1", keep: true }], clarifiedPointIndexes: [], remainingQuestionIndexes: [] };
+const stages = [];
+const approved = await runReflectionAnalysis(request, async (stage) => { stages.push(stage); return stage === "analysis" ? response : review; });
+assert.deepEqual(stages, ["analysis", "review"]);
+assert.match(approved.observations[0].id, /^[0-9a-f-]{36}$/u);
+const prioritiesRequest = analysisRequestSchema.parse({ ...request, priorities: "Graduate on time and gain relevant experience." });
+const withPriorities = await runReflectionAnalysis(prioritiesRequest, async (stage) => stage === "analysis" ? response : review);
+assert.equal(withPriorities.decisionFrame.goal, prioritiesRequest.priorities);
+assert.equal(withPriorities.decisionFrame.goalQuote, prioritiesRequest.priorities);
+const filtered = await runReflectionAnalysis(request, async (stage) => stage === "analysis" ? response : { ...review, observations: [{ id: "obs-1", keep: false }] });
+assert.equal(filtered.observations.length, 0);
+for (const badReview of [{ ...review, summaryFaithful: false }, { ...review, frameFaithful: false }, { ...review, respectsUserAgency: false }, { ...review, observations: [] }, { ...review, observations: [{ id: "unknown", keep: true }] }, { ...review, remainingQuestionIndexes: [0] }]) {
+  await assert.rejects(runReflectionAnalysis(request, async (stage) => stage === "analysis" ? response : badReview), /unverified-response/u);
+}
+let calls = 0;
+await assert.rejects(runReflectionAnalysis(request, async () => { calls++; return { ...response, observations: [{ ...observation, grounding: "An invented statement about guaranteed outcomes." }] }; }), /unverified-response/u);
+assert.equal(calls, 1, "Reject unmatched evidence before another paid call.");
+await assert.rejects(runReflectionAnalysis(request, async () => { throw new Error("provider unavailable"); }), /provider unavailable/u);
+const slots = [reserveAnalysisSlot(), reserveAnalysisSlot(), reserveAnalysisSlot()];
+assert.ok(slots.every(Boolean));
+assert.equal(reserveAnalysisSlot(), null);
+slots[0](); slots[0]();
+const replacement = reserveAnalysisSlot();
+assert.ok(replacement);
+assert.equal(reserveAnalysisSlot(), null, "A double release must not increase capacity.");
+replacement(); slots[1](); slots[2]();
+console.log("Grounding and two-stage review checks passed: source quotes, goal evidence, clarifications, safe filtering, unknown IDs, unsupported verdicts, invalid indexes, and provider failures.");

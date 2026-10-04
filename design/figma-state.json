@@ -1,0 +1,11 @@
+{
+  "fileKey": "qAZB7ySo5WAyikJOyZA025",
+  "url": "https://www.figma.com/design/qAZB7ySo5WAyikJOyZA025",
+  "page": { "id": "0:1", "name": "Product design" },
+  "root": { "id": "2:2", "name": "Step 5 — Reflection workspace" },
+  "screens": [
+    { "id": "4:2", "name": "01 — Start reflection" },
+    { "id": "4:28", "name": "02 — Review observations" },
+    { "id": "4:67", "name": "03 — Mobile review" }
+  ]
+}
