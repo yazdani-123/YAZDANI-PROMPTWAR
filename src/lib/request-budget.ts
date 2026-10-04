@@ -6,5 +6,10 @@ export function reserveAnalysisSlot() {
   if (activeAnalyses >= MAX_CONCURRENT_ANALYSES) return null;
   activeAnalyses++;
   let released = false;
-  return () => { if (!released) { activeAnalyses--; released = true; } };
+  return () => {
+    if (!released) {
+      activeAnalyses--;
+      released = true;
+    }
+  };
 }

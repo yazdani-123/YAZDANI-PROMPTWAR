@@ -49,4 +49,3 @@ The [current official in-person page](https://promptwars.in/promptwars.html) des
 6. Present a brief demonstration of the reason-to-outcome connection and how a user's correction removes a resolved concern. Explain the AI prompting constraints and limitations.
 
 The project has a credible, focused solution to the challenge. The evidence supports a working local prototype; it does not support a guaranteed 90+ official score, complete security assurance, or full accessibility conformance.
-

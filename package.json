@@ -8,9 +8,11 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node scripts/check-grounding.mjs",
+    "test": "node scripts/check-grounding.mjs && node scripts/check-client.mjs",
     "test:api": "node scripts/check-api.mjs",
-    "test:security": "node scripts/check-security.mjs"
+    "test:security": "node scripts/check-security.mjs",
+    "format": "prettier --write src scripts package.json",
+    "format:check": "prettier --check src scripts package.json"
   },
   "dependencies": {
     "@google/genai": "^2.27.0",
@@ -26,7 +28,9 @@
     "@types/react-dom": "^19.3.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.8",
+    "prettier": "^3.9.9",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3"
-  }
+  },
+  "type": "module"
 }

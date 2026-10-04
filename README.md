@@ -28,6 +28,7 @@ Open the localhost address printed by Next.js. For live AI, create `.env.local` 
 ```sh
 npm run lint
 npm run typecheck
+npm run format:check
 npm run build
 npm test
 npm run test:api
@@ -38,7 +39,7 @@ See `THE_BLIND_SPOT_BUILD_WORKFLOW.md` for the ordered workflow and `BUILD_PROGR
 
 Build, lint, typecheck, source/review/capacity checks, API request checks, browser checks, and a production live request passed. `test:api` requires a running local server and makes no model calls. `node scripts/evaluate-reflection.mjs` intentionally makes seven API requests to `EVALUATION_URL` (default `http://127.0.0.1:3001/api/analyze`), invoking up to fourteen model calls. It consumes quota and may incur charges. Review its saved synthetic output for semantics, which mechanical assertions cannot establish.
 
-The final dependency audit reports zero known vulnerabilities. The 18 direct security checks passed; see [SECURITY_TEST_REPORT.md](SECURITY_TEST_REPORT.md). Strix was unavailable, so a Strix pentest was not run. Both AI passes use the same model and can make mistakes; the review is not external fact verification. Matching quotes establishes provenance, not factual truth. The process-local cap of three concurrent analyses is not a distributed rate limiter. Host-level limits and provider quota controls must be configured during later public deployment.
+The earlier dependency audit is historical; the latest audit has five findings in development-tool dependencies. See [QUALITY_EFFICIENCY_REPORT.md](QUALITY_EFFICIENCY_REPORT.md) for the final changes, measurements, verification, and limitations. The 18 direct security checks passed; see [SECURITY_TEST_REPORT.md](SECURITY_TEST_REPORT.md). Strix was unavailable, so a Strix pentest was not run. Both AI passes use the same model and can make mistakes; the review is not external fact verification. Matching quotes establishes provenance, not factual truth. The process-local cap of three concurrent analyses is not a distributed rate limiter. Host-level limits and provider quota controls must be configured during later public deployment.
 
 ## Production and later deployment
 
